@@ -61,6 +61,22 @@
   <p>Site indépendant créé par et pour les élèves. Non affilié officiellement à l'administration de l'établissement.</p>
   <p>Vie privée : aucune donnée nominative collectée, pas de compte, pas de cookie de suivi. Les votes sont anonymes.</p>
 </footer>
+<dialog id="dlg-snacks" aria-labelledby="t-snacks">
+  <button class="close" aria-label="Fermer">✕</button>
+  <h2 id="t-snacks">Snacks &amp; boissons de la cafétéria</h2>
+  <div id="snacks"></div>
+</dialog>
+<dialog id="dlg-msg" aria-labelledby="t-msg">
+  <button class="close" aria-label="Fermer">✕</button>
+  <h2 id="t-msg">Messages anonymes</h2>
+  <form id="msg-form">
+    <textarea name="texte" placeholder="Écris ton message anonyme…" maxlength="300" rows="4" required></textarea>
+    <button class="cta">Envoyer</button>
+  </form>
+  <p id="msg-status" class="hint" aria-live="polite"></p>
+  <p class="hint">Aucun nom, aucun compte. Les messages sont relus avant publication et restent visibles 7 jours. Pas d'insultes, de harcèlement ni de noms d'élèves ou de profs.</p>
+  <div id="msgs" class="cards"></div>
+</dialog>
 <script type="module" src="app.js"></script>
 </body>
 </html>
