@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lycée Hub</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;600;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="top">
+  <h1 id="nom"></h1>
+  <div class="week" id="week" aria-live="polite"></div>
+  <button id="theme" class="icon" aria-label="Changer de thème">🌓</button>
+</header>
+<main>
+  <section class="links" id="links" aria-label="Accès rapides"></section>
+
+  <section class="glass" id="countdown-box"><h2>Compte à rebours</h2><p id="countdown" class="big"></p><p id="cd-name"></p></section>
+
+  <section class="glass"><h2>Cantine</h2><ul id="menu" class="menu"></ul>
+    <div id="vote-box" class="row"><span>Le plat du jour ?</span>
+      <button data-v="likes">👍 <b id="n-likes">0</b></button><button data-v="dislikes">👎 <b id="n-dislikes">0</b></button></div>
+  </section>
+
+  <section class="glass"><h2>Où est-ce qu'on mange ?</h2>
+    <div class="wheel-wrap"><i class="pointer"></i><canvas id="wheel" width="300" height="300"></canvas></div>
+    <button id="spin" class="cta">Lancer la roue</button><p id="spin-result" class="big" aria-live="polite"></p></section>
+
+  <section class="glass"><h2>Sondage de la semaine</h2><p id="poll-q"></p><div id="poll"></div></section>
+
+  <section class="glass wide"><h2>Bourse aux manuels & annonces</h2>
+    <form id="ad-form" class="form">
+      <input name="titre" placeholder="Titre (ex : Maths 1re, Hachette)" maxlength="80" required>
+      <select name="matiere" id="ad-matiere"></select>
+      <input name="prix" placeholder="Prix ou « Gratuit »" maxlength="20" required>
+      <input name="contact" placeholder="Contact (Insta, mail…)" maxlength="100" required>
+      <button class="cta">Publier</button>
+    </form>
+    <p class="hint">Évite de donner ton nom complet ou ton numéro de téléphone.</p>
+    <div class="row"><select id="filter"></select><input id="search" placeholder="Rechercher…"></div>
+    <div id="ads" class="cards"></div></section>
+
+  <section class="wide"><h2>Clubs du lycée</h2><div id="clubs" class="cards"></div></section>
+</main>
+<footer>
+  <p>Site indépendant créé par et pour les élèves. Non affilié officiellement à l'administration de l'établissement.</p>
+  <p>Vie privée : aucune donnée nominative collectée, pas de compte, pas de cookie de suivi. Les votes sont anonymes.</p>
+</footer>
+<script type="module" src="app.js"></script>
+</body>
+</html>
