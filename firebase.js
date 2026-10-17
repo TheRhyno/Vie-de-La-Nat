@@ -2,15 +2,24 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/fireba
 import { getFirestore, collection, addDoc, doc, setDoc, onSnapshot, query, orderBy, limit,
   serverTimestamp, increment } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
 
-// 🔑 Collez ici la config de votre projet (Console Firebase > Paramètres > Vos applications > Web)
 const firebaseConfig = {
-  apiKey: "VOTRE_API_KEY",
-  authDomain: "VOTRE-PROJET.firebaseapp.com",
-  projectId: "VOTRE-PROJET",
-  storageBucket: "VOTRE-PROJET.appspot.com",
-  messagingSenderId: "000000000000",
-  appId: "1:000000000000:web:xxxxxxxx"
+
+  apiKey: "AIzaSyAVVoMFbFzON_7tHIAyatCwWMKLnoQXB9I",
+
+  authDomain: "vie-de-la-nat.firebaseapp.com",
+
+  projectId: "vie-de-la-nat",
+
+  storageBucket: "vie-de-la-nat.firebasestorage.app",
+
+  messagingSenderId: "572532360688",
+
+  appId: "1:572532360688:web:eb0247c9183a6288a30935",
+
+  measurementId: "G-CN2VC91M1Q"
+
 };
+
 
 export const db = getFirestore(initializeApp(firebaseConfig));
 export { collection, addDoc, doc, setDoc, onSnapshot, query, orderBy, limit, serverTimestamp, increment };
