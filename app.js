@@ -1,4 +1,6 @@
 import { SITE } from "./config.js";
+import { where } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
+import { SNACKS } from "./snacks.js";
 import { db, collection, addDoc, doc, setDoc, onSnapshot, query, orderBy, limit, serverTimestamp, increment } from "./firebase.js";
 
 const $ = (s) => document.querySelector(s);
@@ -127,3 +129,45 @@ renderTips();
 SITE.clubs.forEach((c) => $("#clubs").append(el("article", { className: "card" },
   el("h3", { textContent: c.nom }), el("p", { textContent: "🕒 " + c.horaire }),
   el("p", { textContent: "📍 " + c.salle }), el("p", { textContent: c.desc }))));
+
+/* ---------- Boutons + fenêtres (snacks, messages anonymes) ---------- */
+const openBtn = (icone, nom, id) => {
+  const b = el("button", { type: "button" }, el("span", { textContent: icone }), nom);
+  b.onclick = () => $(id).showModal(); $("#links").append(b);
+};
+openBtn("🥤", "Snacks & boissons", "#dlg-snacks"); openBtn("💬", "Messages anonymes", "#dlg-msg");
+document.querySelectorAll("dialog").forEach((d) => {
+  d.onclick = (e) => { if (e.target === d) d.close(); };
+  d.querySelector(".close").onclick = () => d.close();
+});
+
+/* Snacks */
+const euro = (c) => (c / 100).toFixed(2).replace(".", ",") + " €";
+$("#snacks").replaceChildren(...SNACKS.flatMap((g) => [el("h3", { textContent: g.theme }),
+  el("ul", { className: "prices" }, ...g.items.map((i) => el("li", {}, i.nom, el("b", { textContent: euro(i.prix) }))))]));
+
+/* Messages anonymes : envoyés avec valide:false, visibles seulement quand TU passes valide à true */
+const mStatus = $("#msg-status");
+$("#msg-form").onsubmit = async (e) => {
+  e.preventDefault();
+  if (Date.now() - (+localStorage.lastMsg || 0) < 60000) { mStatus.textContent = "Attends une minute avant d'envoyer un autre message."; return; }
+  const texte = new FormData(e.target).get("texte").trim();
+  if (!texte) return;
+  try {
+    await addDoc(collection(db, "messages"), { texte, valide: false, createdAt: serverTimestamp() });
+    localStorage.lastMsg = Date.now(); e.target.reset();
+    mStatus.textContent = "⏳ Message en cours de traitement : il sera bientôt publié.";
+  } catch (err) { console.warn(err); mStatus.textContent = "Envoi impossible pour le moment. Réessaie plus tard."; }
+};
+const dateFr = new Intl.DateTimeFormat("fr-FR", { dateStyle: "long" });
+function renderMsgs(list) {
+  $("#msgs").replaceChildren(...(list.length ? list.map((m) => el("article", { className: "card" },
+    el("p", { textContent: m.texte }), el("p", { className: "hint", textContent: "Posté le " + dateFr.format(m.createdAt.toDate()) })))
+    : [el("p", { className: "hint", textContent: "Aucun message publié pour l'instant." })]));
+}
+renderMsgs([]);
+safe(() => onSnapshot(query(collection(db, "messages"), where("valide", "==", true), limit(100)), (s) => {
+  const now = Date.now(); // un message reste visible 7 jours après son envoi
+  renderMsgs(s.docs.map((d) => d.data()).filter((m) => m.createdAt && now - m.createdAt.toMillis() < 6048e5)
+    .sort((a, b) => b.createdAt.toMillis() - a.createdAt.toMillis()));
+}));
