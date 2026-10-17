@@ -33,27 +33,14 @@ function countdown() {
   const next = SITE.evenements.map((e) => ({ ...e, t: new Date(e.date) })).filter((e) => e.t > Date.now()).sort((a, b) => a.t - b.t)[0];
   if (!next) { $("#countdown").textContent = "—"; return; }
   const s = Math.floor((next.t - Date.now()) / 1000);
-  $("#countdown").textContent = `${Math.floor(s / 86400)} j ${Math.floor(s % 86400 / 3600)} h ${Math.floor(s % 3600 / 60)} min ${s % 60} s`;
+  $("#countdown").textContent = `${Math.floor(s / 86400)} j ${Math.floor(s % 86400 / 3600)} h ${Math.floor(s % 3600 / 60)} min`;
   $("#cd-name").textContent = `avant : ${next.nom}`;
 }
-countdown(); setInterval(countdown, 1000);
+countdown(); setInterval(countdown, 30000);
 
-/* ---------- Cantine + vote ---------- */
-const today = new Date(), idx = today.getDay() - 1, dayKey = today.toISOString().slice(0, 10);
-SITE.menu.forEach((m, i) => $("#menu").append(el("li", { textContent: m, className: i === idx ? "today" : "" })));
-if (idx < 0 || idx > 4) $("#vote-box").hidden = true;
-const voted = localStorage.getItem("vote-" + dayKey);
-document.querySelectorAll("#vote-box button").forEach((b) => {
-  b.disabled = !!voted;
-  b.onclick = () => safe(async () => {
-    localStorage.setItem("vote-" + dayKey, b.dataset.v);
-    document.querySelectorAll("#vote-box button").forEach((x) => (x.disabled = true));
-    await setDoc(doc(db, "votes", dayKey), { [b.dataset.v]: increment(1) }, { merge: true });
-  });
-});
-safe(() => onSnapshot(doc(db, "votes", dayKey), (s) => {
-  $("#n-likes").textContent = s.data()?.likes || 0; $("#n-dislikes").textContent = s.data()?.dislikes || 0;
-}));
+/* ---------- Menu de la cantine (PDF) ---------- */
+const pdfUrl = SITE.menuPdf + "?d=" + new Date().toISOString().slice(0, 10); // évite l'ancien PDF en cache
+$("#menu-pdf").src = pdfUrl; $("#menu-link").href = pdfUrl;
 
 /* ---------- Roue ---------- */
 const cv = $("#wheel"), ctx = cv.getContext("2d"), n = SITE.lieux.length, step = 360 / n;
@@ -110,6 +97,31 @@ $("#ad-form").onsubmit = (e) => {
 safe(() => onSnapshot(query(collection(db, "annonces"), orderBy("createdAt", "desc"), limit(50)),
   (s) => { ads = s.docs.map((d) => d.data()); renderAds(); }));
 renderAds();
+
+/* ---------- Conseils / aides / fiches ---------- */
+const fill = (node, items, first) => node.replaceChildren(...[first, ...items].filter(Boolean).map((m) => el("option", { textContent: m, value: m === first ? "" : m })));
+fill($("#tip-type"), SITE.typesConseil); fill($("#tip-matiere"), SITE.matieres);
+fill($("#tip-filter-type"), SITE.typesConseil, "Tous les types"); fill($("#tip-filter-mat"), SITE.matieres, "Toutes les matières");
+let tips = [];
+function renderTips() {
+  const t = $("#tip-filter-type").value, m = $("#tip-filter-mat").value;
+  const list = tips.filter((x) => (!t || x.type === t) && (!m || x.matiere === m));
+  $("#tips").replaceChildren(...(list.length ? list.map((x) => {
+    const card = el("article", { className: "card" }, el("h3", { textContent: x.titre }),
+      el("span", { className: "tag", textContent: `${x.type} · ${x.matiere}` }), el("p", { textContent: x.texte }));
+    if (/^https?:\/\//.test(x.lien || "")) card.append(el("a", { href: x.lien, target: "_blank", rel: "noopener noreferrer", textContent: "Ouvrir la ressource" }));
+    return card;
+  }) : [el("p", { className: "hint", textContent: "Rien pour l'instant. Partage le premier conseil !" })]));
+}
+$("#tip-filter-type").onchange = $("#tip-filter-mat").onchange = renderTips;
+$("#tip-form").onsubmit = (e) => {
+  e.preventDefault();
+  const d = Object.fromEntries(new FormData(e.target));
+  safe(async () => { await addDoc(collection(db, "conseils"), { ...d, createdAt: serverTimestamp() }); e.target.reset(); });
+};
+safe(() => onSnapshot(query(collection(db, "conseils"), orderBy("createdAt", "desc"), limit(50)),
+  (s) => { tips = s.docs.map((d) => d.data()); renderTips(); }));
+renderTips();
 
 /* ---------- Clubs ---------- */
 SITE.clubs.forEach((c) => $("#clubs").append(el("article", { className: "card" },
