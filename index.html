@@ -19,9 +19,9 @@
 
   <section class="glass" id="countdown-box"><h2>Compte à rebours</h2><p id="countdown" class="big"></p><p id="cd-name"></p></section>
 
-  <section class="glass"><h2>Cantine</h2><ul id="menu" class="menu"></ul>
-    <div id="vote-box" class="row"><span>Le plat du jour ?</span>
-      <button data-v="likes">👍 <b id="n-likes">0</b></button><button data-v="dislikes">👎 <b id="n-dislikes">0</b></button></div>
+  <section class="glass"><h2>Menu de la cantine</h2>
+    <iframe id="menu-pdf" class="pdf" title="Menu de la cantine de la semaine"></iframe>
+    <p class="hint"><a id="menu-link" target="_blank" rel="noopener">Ouvrir le menu en grand</a> (si le PDF ne s'affiche pas sur ton téléphone)</p>
   </section>
 
   <section class="glass"><h2>Où est-ce qu'on mange ?</h2>
@@ -41,6 +41,19 @@
     <p class="hint">Évite de donner ton nom complet ou ton numéro de téléphone.</p>
     <div class="row"><select id="filter"></select><input id="search" placeholder="Rechercher…"></div>
     <div id="ads" class="cards"></div></section>
+
+  <section class="glass wide"><h2>Conseils, aides & fiches de révision</h2>
+    <form id="tip-form" class="form">
+      <input name="titre" placeholder="Titre (ex : Méthode pour la dissertation)" maxlength="80" required>
+      <select name="type" id="tip-type"></select>
+      <select name="matiere" id="tip-matiere"></select>
+      <input name="lien" type="url" placeholder="Lien (Drive, site…) — facultatif" maxlength="300">
+      <textarea name="texte" placeholder="Ton conseil ou ton explication (vérifie qu'il est correct !)" maxlength="600" rows="3" required></textarea>
+      <button class="cta">Partager</button>
+    </form>
+    <p class="hint">Partage uniquement ce que tu as le droit de diffuser (pas de copie de manuel ni de contenu d'un prof sans accord).</p>
+    <div class="row"><select id="tip-filter-type"></select><select id="tip-filter-mat"></select></div>
+    <div id="tips" class="cards"></div></section>
 
   <section class="wide"><h2>Clubs du lycée</h2><div id="clubs" class="cards"></div></section>
 </main>
